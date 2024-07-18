@@ -1,0 +1,17 @@
+[
+    {
+        "id": "08bb3ba53b7f4638b3b64ac232f9eb5c",
+        "name": "kartoshka",
+        "price": 23
+    },
+    {
+        "id": "2294cb7c315347008735cea532faf128",
+        "name": "potato",
+        "price": 2
+    },
+    {
+        "id": "028f487f0f164fa69d5d834abd5846bc",
+        "name": "krumpli",
+        "price": 2300
+    }
+]

@@ -24,9 +24,6 @@ try:
 except Exception as error:
     print(error)
 
-
-
-
 # 2) Створити записну книжку покупок:
 # - у покупки повинна бути id, назва і ціна
 # - всі покупки зберігаємо в файлі
@@ -37,7 +34,96 @@ except Exception as error:
 # * має бути змога показати найдорожчу покупку
 # * має бути можливість видаляти покупку по id
 # (ну і меню на це все)
-#
+
+from typing import TypedDict
+import json
+import uuid
+
+
+class BuyList:
+    class Item(TypedDict):
+        id: str
+        name: str
+        price: int
+
+    def __init__(self):
+        self.list: list[BuyList.Item] = []
+        self.read_from_file()
+
+    def get_all(self):
+        return self.list if self.list else 'no records...'
+
+    def add_to_list(self, name: str, price: int):
+        item_id = uuid.uuid4().hex
+        item: BuyList.Item = {'id': item_id, 'name': name, 'price': price}
+        if not any(existed_item['id'] == item_id for existed_item in self.list):
+            item['id'] = item_id
+            self.list.append(item)
+            self.save_to_file()
+
+    def search_by(self, field_name: str, value: (str, int)):
+        match field_name:
+            case 'id':
+                return [item for item in self.list if item['id'] == value] or 'no matches'
+            case 'name':
+                return [item for item in self.list if item['name'] == value] or 'no matches'
+            case 'price':
+                return [item for item in self.list if item['price'] == value] or 'no matches'
+            case _:
+                return 'field not exist'
+
+    def max_price(self):
+        return max(self.list, key=lambda item: item['price']) if len(self.list) else 'no records...'
+
+    def delete_by_id(self, item_id: str):
+        self.list = [item for item in self.list if item['id'] != item_id]
+        self.save_to_file()
+
+    def read_from_file(self):
+        try:
+            with open('buylist.json', 'r') as file:
+                self.list = json.load(file)
+        except Exception:
+            self.list = []
+            print('no file found')
+
+    def save_to_file(self):
+        with open('buylist.json', 'w') as file:
+            json.dump(self.list, file, indent=4)
+
+
+while True:
+    blist = BuyList()
+
+    print('1 - show all items')
+    print('2 - add new item')
+    print('3 - search item')
+    print('4 - search the mot expensive item')
+    print('5 - delete item by id')
+    print('6 - exit')
+
+    choice = input('enter your choice: ')
+
+    match choice:
+        case '1':
+            print(blist.get_all())
+        case '2':
+            item_name = input('enter name: ')
+            item_price = input('enter price: ')
+            blist.add_to_list(item_name, int(item_price))
+        case '3':
+            field = input('enter field to search by name or price or id: ')
+            value = input('enter value: ')
+            print(blist.search_by(field, value))
+        case '4':
+            print(blist.max_price())
+        case '5':
+            del_id = input('enter id to delete: ')
+            blist.delete_by_id(del_id)
+            print(blist.get_all())
+        case '6':
+            break
+
 # *********Кому буде замало ось завдання з співбесіди
 # Є ось такий список:
 # data = [
